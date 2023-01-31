@@ -6,6 +6,7 @@ import com.revature.controllers.AnotherController;
 import com.revature.controllers.Controller;
 import com.revature.model.Employee;
 import com.revature.repository.Repository;
+import com.revature.utils.ConnectionUtils;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
@@ -23,9 +24,9 @@ public final class App {
     public static void main(String[] args) throws Exception{
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         Repository repo = new Repository();
-        Employee employee = new Employee("bool","0964");
+        Employee employee = new Employee("ascii","11111");
 
-        repo.saveToFile(employee);
+        repo.saveToDatabase(employee);
 
         server.createContext("/someURL", (HttpHandler) new Controller());
         server.createContext("/otherURL", (HttpHandler) new AnotherController());

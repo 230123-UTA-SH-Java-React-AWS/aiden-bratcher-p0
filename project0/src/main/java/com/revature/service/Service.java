@@ -21,7 +21,7 @@ public class Service {
         try {
             Employee newEmployee = mapper.readValue(jsonString, Employee.class);
 
-            repo.saveToFile(newEmployee);
+            repo.saveToDatabase(newEmployee);
         } catch (JsonParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
