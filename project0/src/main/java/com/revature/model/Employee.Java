@@ -1,25 +1,34 @@
 package com.revature.model;
 
 public class Employee {
-    private String username;
+    private String email;
     private String password;
+    private int id;
 
-    public Employee(String username, String password){
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int iD) {
+        id = iD;
+    }
+
+    public Employee(String email, String password){
         this.password = password;
-        this.username = username;
+        this.email = email;
     }
 
     public Employee(){
         password = "junkPassword";
-        username = "junkUsername";
+        email = "junkUsername";
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

@@ -1,8 +1,10 @@
 package com.revature;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
-import com.revature.controllers.AnotherController;
+import com.revature.controllers.LoginController;
+import com.revature.controllers.TicketController;
 import com.revature.controllers.Controller;
 import com.revature.model.Employee;
 import com.revature.repository.Repository;
@@ -24,12 +26,13 @@ public final class App {
     public static void main(String[] args) throws Exception{
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
         Repository repo = new Repository();
-        Employee employee = new Employee("ascii","11111");
+        // Employee employee = new Employee("ascii","11111");
 
-        repo.saveToDatabase(employee);
+        // repo.saveToDatabase(employee);
 
         server.createContext("/someURL", (HttpHandler) new Controller());
-        server.createContext("/otherURL", (HttpHandler) new AnotherController());
+        server.createContext("/login", (HttpHandler) new LoginController());
+        server.createContext("/tickets", (HttpHandler) new TicketController());
 
         server.setExecutor(null);
         server.start();

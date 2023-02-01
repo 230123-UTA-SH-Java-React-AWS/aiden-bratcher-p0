@@ -14,7 +14,7 @@ import com.revature.model.Employee;
 import com.revature.service.Service;
 import com.sun.net.httpserver.HttpExchange;
 
-public class Controller implements HttpHandler{
+public class TicketController implements HttpHandler{
     
     @Override
     public void handle(HttpExchange exchange) throws IOException{
@@ -32,7 +32,6 @@ public class Controller implements HttpHandler{
             case "POST":
                 postRequest(exchange);
                 break;
-
             case "GET":
                 getRequest(exchange);
                 break;
@@ -63,7 +62,7 @@ public class Controller implements HttpHandler{
         // os.close();
 
         Service serv = new Service();
-        String jsonCurrentList = serv.getAllUsers();
+        String jsonCurrentList = serv.getAllTickets();
 
         exchange.sendResponseHeaders(200, jsonCurrentList.getBytes().length);
 
@@ -102,7 +101,7 @@ public class Controller implements HttpHandler{
 
         //make static later?
         Service serv = new Service();
-        serv.saveFromFile(textBuilder.toString());
+        serv.saveNewTicket(textBuilder.toString());
 
         OutputStream os = exchange.getResponseBody();
         os.write(textBuilder.toString().getBytes());
