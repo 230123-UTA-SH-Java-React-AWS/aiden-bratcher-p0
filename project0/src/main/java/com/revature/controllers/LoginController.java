@@ -1,7 +1,15 @@
 package com.revature.controllers;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
+import com.revature.repository.Repository;
+import com.revature.service.Service;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -43,9 +51,26 @@ public class LoginController implements HttpHandler{
     }
 
     public void postRequest(HttpExchange exchange) throws IOException {
-        String resultResponse = "";
+        InputStream is = exchange.getRequestBody();
 
-        
+        StringBuilder textBuilder = new StringBuilder();
+        try(Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())))){
+            int c = 0;
+
+            //read() will return -1 when there are no more characters
+            while ((c = reader.read()) != -1){
+                textBuilder.append((char)c);
+            }
+        }
+
+        String resultResponse = "Login Unsuccessful. Make sure you entered the correct email and password";
+
+        Service serv = new Service();
+        if (serv.checkForUser(textBuilder.toString())){
+            if (serv.verifyPassword(textBuilder.toString())){
+                resultResponse = "Login Successful";
+            }
+        }
 
 
         exchange.sendResponseHeaders(200, resultResponse.getBytes().length);

@@ -14,18 +14,10 @@ import com.revature.model.Employee;
 import com.revature.service.Service;
 import com.sun.net.httpserver.HttpExchange;
 
-public class TicketController implements HttpHandler{
+public class ManagerTicketController implements HttpHandler{
     
     @Override
     public void handle(HttpExchange exchange) throws IOException{
-        // String someResponse = "response";
-
-        // exchange.sendResponseHeaders(200, someResponse.getBytes().length);
-
-        // OutputStream os = exchange.getResponseBody();
-        // os.write(someResponse.getBytes());
-        // os.close();
-
         String httpVerb = exchange.getRequestMethod();
 
         switch (httpVerb){
@@ -74,37 +66,5 @@ public class TicketController implements HttpHandler{
     }
 
     public void postRequest(HttpExchange exchange) throws IOException {
-        InputStream is = exchange.getRequestBody();
-
-        String response = "";
-
-        //Convert InputStream to String
-        StringBuilder textBuilder = new StringBuilder();
-        try(Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())))){
-            int c = 0;
-
-            //read() will return -1 when there are no more characters
-            while ((c = reader.read()) != -1){
-                textBuilder.append((char)c);
-            }
-        }
-
-        Service serv = new Service();
-        response = serv.saveNewTicket(textBuilder.toString());
-
-
-        if (response == "") {
-            response = "Ticket submitted";
-        }
-        exchange.sendResponseHeaders(200, response.getBytes().length);
-
-        //make static later?
-        
-
-        OutputStream os = exchange.getResponseBody();
-        // os.write(textBuilder.toString().getBytes());
-
-        os.write(response.getBytes());
-        os.close();
     }
 }

@@ -7,6 +7,13 @@ public class Ticket {
     private String description;
     private String status;
 
+    public Ticket(){
+        amount = -1;
+        description = null;
+        status = "PENDING";
+    }
+
+
     //Getters and Setters
     public int getEmpId() {
         return empId;
@@ -38,7 +45,4 @@ public class Ticket {
     public void setStatus(String status) {
         this.status = status;
     }
-
-
-
 }

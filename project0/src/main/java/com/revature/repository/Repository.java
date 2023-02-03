@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,45 +21,28 @@ import org.postgresql.util.PSQLException;
 
 //Responsible for interacting with a database and sending/recieving information from the database
 public class Repository {
-    public void saveToDatabase(Employee employee){
-        // ObjectMapper mapper = new ObjectMapper();
-        // String jsonObject = "";
+    public String saveToDatabase(Employee employee){
+        String result = "";
 
-        
+        String sql = "insert into users (username, password, ismanager) values(?, ?, ?)";
 
-        // try{
-        //     jsonObject = mapper.writeValueAsString(employee);
+        if (!checkIfExists(employee)){
+            try (Connection con = ConnectionUtils.getConnection()) {
+                PreparedStatement prstmt = con.prepareStatement(sql);
 
-        //     File export = new File("employee.json");
-        //     export.createNewFile();
+                prstmt.setString(1, employee.getEmail());
+                prstmt.setString(2, employee.getPassword());
+                prstmt.setBoolean(3, false);
 
-        //     FileWriter writer = new FileWriter("employee.json");
-        //     writer.write(jsonObject);
-        //     writer.close();
-        // } catch (JsonGenerationException e) {
-        //     e.printStackTrace();
-        // } catch (JsonMappingException e) {
-        //     e.printStackTrace();
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
+                prstmt.execute();
+                result = "Registration Successful";
+                return result;
+            }  catch (Exception e){
+                e.printStackTrace();
+            }
+        } else result = "That email is already in use";
 
-        String sql = "insert into users (username, password) values(?, ?)";
-
-        try (Connection con = ConnectionUtils.getConnection()) {
-            PreparedStatement prstmt = con.prepareStatement(sql);
-
-            prstmt.setString(1, employee.getEmail());
-            prstmt.setString(2, employee.getPassword());
-
-            prstmt.executeQuery();
-        } catch (PSQLException e){
-            e.printStackTrace();
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-
+        return result;
     }
 
 
@@ -113,24 +97,73 @@ public class Repository {
         return listOfUsers;
     }
 
-
-    public void saveToDatabase(Ticket ticket) {
+    public String saveToDatabase(Ticket ticket) {
+        String response = "";
         String sql = "insert into ticket (personid, amount, description, status) values(?, ?, ?, ?)";
+
+        if (ticket.getAmount() < 0 || ticket.getDescription() == null){
+            response = "Please enter a description and valid amount";
+        } else {
+            try (Connection con = ConnectionUtils.getConnection()) {
+                PreparedStatement prstmt = con.prepareStatement(sql);
+
+                prstmt.setInt(1, 1);
+                prstmt.setInt(2, ticket.getAmount());
+                prstmt.setString(3, ticket.getDescription());
+                prstmt.setString(4, ticket.getStatus());
+
+                prstmt.execute();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return response;
+    }
+
+    public boolean checkIfExists(Employee employee){
+        boolean result = false;
+        String sql = "select count(username) as total from users where username = ?";
 
         try (Connection con = ConnectionUtils.getConnection()) {
             PreparedStatement prstmt = con.prepareStatement(sql);
 
+            prstmt.setString(1, employee.getEmail());
+            ResultSet rs = prstmt.executeQuery();
 
-            prstmt.setInt(1, 1);
-            prstmt.setInt(2, ticket.getAmount());
-            prstmt.setString(3, ticket.getDescription());
-            prstmt.setString(4, ticket.getStatus());
-
-            prstmt.executeQuery();
-        } catch (PSQLException e){
-            e.printStackTrace();
-        } catch (Exception e){
+            while(rs.next()){
+                if(rs.getInt("total") != 0){
+                    result = true;
+                }
+            }            
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return result;
     }
+
+    public boolean verifyPassword(Employee employee) {
+        boolean result = false;
+        String sql = "select count(password) as total from users where username = ? and password = ?";
+
+        try (Connection con = ConnectionUtils.getConnection()) {
+            PreparedStatement prstmt = con.prepareStatement(sql);
+
+            prstmt.setString(1, employee.getEmail());
+            prstmt.setString(2, employee.getPassword());
+            ResultSet rs = prstmt.executeQuery();
+
+            while(rs.next()){
+                if(rs.getInt("total") != 0){
+                    result = true;
+                }
+            }            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+    
 }

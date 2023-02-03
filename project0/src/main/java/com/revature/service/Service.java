@@ -14,27 +14,30 @@ import com.revature.repository.Repository;
 
 //Behavior driven classes
 public class Service {
-    public void saveFromFile(String jsonString){
+    private Employee convertFromString(String jsonString){
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            Employee newEmployee = mapper.readValue(jsonString, Employee.class);
+            return newEmployee;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    public String saveNewUser(String jsonString){
         //from string to object
         Repository repo = new Repository();
 
-        ObjectMapper mapper = new ObjectMapper();
+        String result = "";
 
-        
-        try {
-            Employee newEmployee = mapper.readValue(jsonString, Employee.class);
+        Employee newEmployee = convertFromString(jsonString);
+        result = repo.saveToDatabase(newEmployee);
 
-            repo.saveToDatabase(newEmployee);
-        } catch (JsonParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        return result;        
     }
 
     public String getAllUsers(){
@@ -82,8 +85,9 @@ public class Service {
         return jsonString;
     }
 
-    public void saveNewTicket(String jsonString) {
+    public String saveNewTicket(String jsonString) {
         Repository repo = new Repository();
+        String response = "";
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -91,16 +95,37 @@ public class Service {
         try {
             Ticket newTicket = mapper.readValue(jsonString, Ticket.class);
 
-            repo.saveToDatabase(newTicket);
+            response = repo.saveToDatabase(newTicket);
         } catch (JsonParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+        return response;
+    }
+
+    public boolean checkForUser(String jsonString) {
+        Repository repo = new Repository();
+
+        boolean result = false;
+
+        Employee newEmployee = convertFromString(jsonString);
+        result = repo.checkIfExists(newEmployee);
+
+        return result;
+    }
+
+    public boolean verifyPassword(String jsonString) {
+        Repository repo = new Repository();
+
+        boolean result = false;
+
+        Employee newEmployee = convertFromString(jsonString);
+        result = repo.verifyPassword(newEmployee);
+
+        return result;
     }
 }

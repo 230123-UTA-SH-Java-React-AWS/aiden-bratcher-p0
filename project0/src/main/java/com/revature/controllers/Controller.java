@@ -96,16 +96,14 @@ public class Controller implements HttpHandler{
             }
         }
 
-        System.out.println(textBuilder.toString());
-
-        exchange.sendResponseHeaders(200, textBuilder.toString().getBytes().length);
-
         //make static later?
         Service serv = new Service();
-        serv.saveFromFile(textBuilder.toString());
+        String result = serv.saveNewUser(textBuilder.toString());
+
+        exchange.sendResponseHeaders(200, result.getBytes().length);
 
         OutputStream os = exchange.getResponseBody();
-        os.write(textBuilder.toString().getBytes());
+        os.write(result.getBytes());
         os.close();
     }
 }
