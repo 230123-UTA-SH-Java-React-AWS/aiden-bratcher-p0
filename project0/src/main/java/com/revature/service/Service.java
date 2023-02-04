@@ -85,7 +85,7 @@ public class Service {
         return jsonString;
     }
 
-    public String saveNewTicket(String jsonString) {
+    public String saveNewTicket(String jsonString, String username) {
         Repository repo = new Repository();
         String response = "";
 
@@ -95,7 +95,7 @@ public class Service {
         try {
             Ticket newTicket = mapper.readValue(jsonString, Ticket.class);
 
-            response = repo.saveToDatabase(newTicket);
+            response = repo.saveToDatabase(newTicket, username);
         } catch (JsonParseException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {
@@ -127,5 +127,29 @@ public class Service {
         result = repo.verifyPassword(newEmployee);
 
         return result;
+    }
+
+    public String getAllPendingTickets(String username){
+        Repository repo = new Repository();
+        String jsonString = "";
+
+        if(repo.checkIfManager(username)){
+            List<Ticket> listOfTickets = repo.getAllPendingTickets();
+            ObjectMapper map = new ObjectMapper();
+        
+            try {
+                jsonString = map.writeValueAsString(listOfTickets);
+            } catch (JsonGenerationException e){
+                e.printStackTrace();
+            } catch (JsonMappingException e){
+                e.printStackTrace();  
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            jsonString = "Invalid user status";
+        }
+        
+        return jsonString;
     }
 }

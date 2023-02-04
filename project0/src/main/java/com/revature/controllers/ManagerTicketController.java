@@ -45,8 +45,10 @@ public class ManagerTicketController implements HttpHandler{
 
     //Get requests from /someURL
     public void getRequest(HttpExchange exchange) throws IOException{
+        String username = exchange.getRequestHeaders().get("username").get(0);
+
         Service serv = new Service();
-        String jsonCurrentList = serv.getAllTickets();
+        String jsonCurrentList = serv.getAllPendingTickets(username);
 
         exchange.sendResponseHeaders(200, jsonCurrentList.getBytes().length);
 

@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.List;
 
 import com.revature.controllers.LoginController;
+import com.revature.controllers.ManagerTicketController;
 import com.revature.controllers.TicketController;
 import com.revature.controllers.Controller;
 import com.revature.model.Employee;
@@ -33,6 +34,7 @@ public final class App {
         server.createContext("/someURL", (HttpHandler) new Controller());
         server.createContext("/login", (HttpHandler) new LoginController());
         server.createContext("/tickets", (HttpHandler) new TicketController());
+        server.createContext("/manageTickets", (HttpHandler) new ManagerTicketController());
 
         server.setExecutor(null);
         server.start();

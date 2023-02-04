@@ -45,6 +45,53 @@ public class Repository {
         return result;
     }
 
+    public String saveToDatabase(Ticket ticket, String username) {
+        String response = "";
+        String sql = "insert into ticket (personid, amount, description, status) values(?, ?, ?, ?)";
+
+        System.out.println(sql);
+        int userID = getUserID(username);
+
+        if (ticket.getAmount() < 0 || ticket.getDescription() == null){
+            response = "Please enter a description and valid amount";
+
+        } else {
+            try (Connection con = ConnectionUtils.getConnection()) {
+                PreparedStatement prstmt = con.prepareStatement(sql);
+
+                prstmt.setInt(1, userID);
+                prstmt.setInt(2, ticket.getAmount());
+                prstmt.setString(3, ticket.getDescription());
+                prstmt.setString(4, ticket.getStatus());
+
+                prstmt.execute();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return response;
+    }
+
+    private int getUserID(String username) {
+        String sql = "select id as userid from users where username = ?";
+        int result = 0;
+
+        try (Connection con = ConnectionUtils.getConnection()){
+            PreparedStatement prstmt = con.prepareStatement(sql);
+
+            prstmt.setString(1, username);
+            ResultSet rs = prstmt.executeQuery();
+
+            while (rs.next()){
+                result = rs.getInt("userid");
+            }
+        } catch (Exception e){
+
+        }
+
+        return result;
+    }
 
     public List<Employee> getAllUsers() {
         String sql = "select * from users";
@@ -70,7 +117,6 @@ public class Repository {
         return listOfUsers;
     }
 
-
     public List<Ticket> getAllTickets() {
         String sql = "select * from ticket";
         List<Ticket> listOfUsers = new ArrayList<Ticket>();
@@ -95,30 +141,6 @@ public class Repository {
 
         }
         return listOfUsers;
-    }
-
-    public String saveToDatabase(Ticket ticket) {
-        String response = "";
-        String sql = "insert into ticket (personid, amount, description, status) values(?, ?, ?, ?)";
-
-        if (ticket.getAmount() < 0 || ticket.getDescription() == null){
-            response = "Please enter a description and valid amount";
-        } else {
-            try (Connection con = ConnectionUtils.getConnection()) {
-                PreparedStatement prstmt = con.prepareStatement(sql);
-
-                prstmt.setInt(1, 1);
-                prstmt.setInt(2, ticket.getAmount());
-                prstmt.setString(3, ticket.getDescription());
-                prstmt.setString(4, ticket.getStatus());
-
-                prstmt.execute();
-            } catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        return response;
     }
 
     public boolean checkIfExists(Employee employee){
@@ -166,4 +188,65 @@ public class Repository {
         return result;
     }
     
+    public List<Ticket> getAllPendingTickets() {
+        String sql = "select * from ticket where status = 'PENDING'";
+        List<Ticket> listOfPending = new ArrayList<Ticket>();
+
+        try (Connection con = ConnectionUtils.getConnection()){
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()){
+                Ticket newTicket = new Ticket();
+
+                newTicket.setId(rs.getInt("id"));
+                newTicket.setEmpId(rs.getInt("personid"));
+                newTicket.setAmount(rs.getInt("amount"));
+                newTicket.setDescription(rs.getString("description"));
+                newTicket.setStatus(rs.getString("status"));
+
+                listOfPending.add(newTicket);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return listOfPending;
+    }
+
+    public void changeTicketStatus(Ticket ticket){
+        String sql = "update ticket set status = ? where id = ?";
+
+        try (Connection con = ConnectionUtils.getConnection()) {
+            PreparedStatement prstmt = con.prepareStatement(sql);
+
+            prstmt.setString(1, ticket.getStatus());
+            prstmt.setInt(2, ticket.getId());
+
+            prstmt.execute();
+        } catch (Exception e){
+
+        }
+    }
+
+    public boolean checkIfManager(String username){
+        boolean result = false;
+        String sql = "select ismanager as rank from users where username = ?";
+
+        try (Connection con = ConnectionUtils.getConnection()){
+            PreparedStatement prstmt = con.prepareStatement(sql);
+
+            prstmt.setString(1, username);
+            ResultSet rs = prstmt.executeQuery();
+
+            while (rs.next()){
+                result = rs.getBoolean("rank");
+                System.out.println(result);
+            }
+        } catch (Exception e){
+
+        }
+
+        return result;
+    }
 }

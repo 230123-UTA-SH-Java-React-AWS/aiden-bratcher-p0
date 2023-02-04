@@ -75,8 +75,9 @@ public class TicketController implements HttpHandler{
 
     public void postRequest(HttpExchange exchange) throws IOException {
         InputStream is = exchange.getRequestBody();
-
         String response = "";
+
+        String username = exchange.getRequestHeaders().get("username").get(0);
 
         //Convert InputStream to String
         StringBuilder textBuilder = new StringBuilder();
@@ -90,7 +91,7 @@ public class TicketController implements HttpHandler{
         }
 
         Service serv = new Service();
-        response = serv.saveNewTicket(textBuilder.toString());
+        response = serv.saveNewTicket(textBuilder.toString(), username);
 
 
         if (response == "") {
