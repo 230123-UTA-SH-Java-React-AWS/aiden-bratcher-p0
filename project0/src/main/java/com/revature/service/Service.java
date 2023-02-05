@@ -7,6 +7,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 
 import com.revature.model.Employee;
 import com.revature.model.Ticket;
@@ -91,7 +92,7 @@ public class Service {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        
+        //needs to catch unrecognized propery exception here, eventually
         try {
             Ticket newTicket = mapper.readValue(jsonString, Ticket.class);
 
@@ -149,7 +150,53 @@ public class Service {
         } else {
             jsonString = "Invalid user status";
         }
+
+        return jsonString;
+    }
+
+
+    public String getPastTickets(String username) {
+        Repository repo = new Repository();
+        String jsonString = "";
+
+        List<Ticket> listOfTickets = repo.getAllPastTickets(username);
+        ObjectMapper map = new ObjectMapper();
+        
+        try {
+            jsonString = map.writeValueAsString(listOfTickets);
+        } catch (JsonGenerationException e){
+            e.printStackTrace();
+        } catch (JsonMappingException e){
+            e.printStackTrace();  
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         
         return jsonString;
+    }
+
+    public String changeTicketStatus(String jsonString, String username) {
+        Repository repo = new Repository();
+        String response = "";
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        if (repo.checkIfManager(username)){
+            try {
+                Ticket newTicket = mapper.readValue(jsonString, Ticket.class);
+
+                response = repo.changeTicketStatus(newTicket, username);
+            } catch (JsonParseException e) {
+                e.printStackTrace();
+            } catch (JsonMappingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            response = "Invalid user status";
+        }
+
+        return response;    
     }
 }

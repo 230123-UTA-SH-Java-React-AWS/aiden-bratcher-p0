@@ -31,7 +31,7 @@ public final class App {
 
         // repo.saveToDatabase(employee);
 
-        server.createContext("/someURL", (HttpHandler) new Controller());
+        server.createContext("/register", (HttpHandler) new Controller());
         server.createContext("/login", (HttpHandler) new LoginController());
         server.createContext("/tickets", (HttpHandler) new TicketController());
         server.createContext("/manageTickets", (HttpHandler) new ManagerTicketController());

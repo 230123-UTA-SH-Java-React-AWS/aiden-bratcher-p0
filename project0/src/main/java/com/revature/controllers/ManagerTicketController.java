@@ -68,5 +68,34 @@ public class ManagerTicketController implements HttpHandler{
     }
 
     public void postRequest(HttpExchange exchange) throws IOException {
+        InputStream is = exchange.getRequestBody();
+        String response = "";
+
+        String username = exchange.getRequestHeaders().get("username").get(0);
+
+        //Convert InputStream to String
+        StringBuilder textBuilder = new StringBuilder();
+        try(Reader reader = new BufferedReader(new InputStreamReader(is, Charset.forName(StandardCharsets.UTF_8.name())))){
+            int c = 0;
+
+            //read() will return -1 when there are no more characters
+            while ((c = reader.read()) != -1){
+                textBuilder.append((char)c);
+            }
+        }
+
+        Service serv = new Service();
+        response = serv.changeTicketStatus(textBuilder.toString(), username);
+
+        if (response == "") {
+            response = "Ticket status changed";
+        }
+        exchange.sendResponseHeaders(200, response.getBytes().length);
+
+        OutputStream os = exchange.getResponseBody();
+        // os.write(textBuilder.toString().getBytes());
+
+        os.write(response.getBytes());
+        os.close();
     }
 }

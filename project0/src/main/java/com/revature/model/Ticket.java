@@ -8,6 +8,7 @@ public class Ticket {
     private String status;
 
     public Ticket(){
+        id = -1;
         amount = -1;
         description = null;
         status = "PENDING";
