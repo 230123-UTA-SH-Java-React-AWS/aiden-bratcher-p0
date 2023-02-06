@@ -55,8 +55,9 @@ public class TicketController implements HttpHandler{
     public void getRequest(HttpExchange exchange) throws IOException{
         Service serv = new Service();
         String username = exchange.getRequestHeaders().get("username").get(0);
+        String status = exchange.getRequestHeaders().get("filter").get(0);
 
-        String jsonCurrentList = serv.getPastTickets(username);
+        String jsonCurrentList = serv.getPastTickets(username, status);
 
         exchange.sendResponseHeaders(200, jsonCurrentList.getBytes().length);
 

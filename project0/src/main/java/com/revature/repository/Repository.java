@@ -256,9 +256,21 @@ public class Repository {
         return result;
     }
 
-    public List<Ticket> getAllPastTickets(String username) {
-        String sql = "select * from ticket where status != 'PENDING' and personid = ?";
+    public List<Ticket> getAllPastTickets(String username, String status) {
+        String sql = "select * from ticket where personid = ?";
         List<Ticket> listOfTickets = new ArrayList<Ticket>();
+
+        switch (status){
+            case "PENDING":
+                sql += " and status = 'PENDING'";
+                break;
+            case "APPROVED":
+                sql += " and status = 'APPROVED'";
+                break;
+            case "DENIED":
+                sql += " and status = 'DENIED'";
+                break;
+        }
 
         int userid = getUserID(username);
 

@@ -155,11 +155,11 @@ public class Service {
     }
 
 
-    public String getPastTickets(String username) {
+    public String getPastTickets(String username, String status) {
         Repository repo = new Repository();
         String jsonString = "";
 
-        List<Ticket> listOfTickets = repo.getAllPastTickets(username);
+        List<Ticket> listOfTickets = repo.getAllPastTickets(username, status);
         ObjectMapper map = new ObjectMapper();
         
         try {
