@@ -215,8 +215,9 @@ public class Repository {
     }
 
     public String changeTicketStatus(Ticket ticket, String username){
-        String sql = "update ticket set status = ? where id = ?";
+        String sql = "update ticket set status = ? where id = ? and status = 'PENDING'";
         String response = "";
+        int processed = 0;
 
         if((ticket.getStatus() == "APPROVED" || ticket.getStatus() == "DENIED") || ticket.getId() > 0){
             try (Connection con = ConnectionUtils.getConnection()) {
@@ -226,8 +227,13 @@ public class Repository {
                 prstmt.setInt(2, ticket.getId());
     
                 prstmt.execute();
+
+                processed = prstmt.getUpdateCount();
+                if (processed == 0){
+                    response = "Ticket has already been processed";
+                }
             } catch (Exception e){
-    
+                
             }
         } else {
             response = "Please submit a valid ticket and/or valid new status";
